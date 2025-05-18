@@ -3,12 +3,11 @@ name: Temperature Daily Export
 on:
   schedule:
     - cron: '59 23 * * *'  # Cada dia a les 23:59
-  workflow_dispatch:       # Permet executar-lo manualment
+  workflow_dispatch:       # ➕ Aquesta línia permet executar manualment
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Clonar el repositori
         uses: actions/checkout@v3
@@ -19,15 +18,17 @@ jobs:
           python-version: '3.11'
 
       - name: Instal·lar dependències
-        run: pip install requests
-
-      - name: Executar el programa Python
-        run: python temperatures.py
-
-      - name: Fer commit dels fitxers JSON
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar script
+        run: python main.py
+
+      - name: Fer commit i push del JSON
+        run: |
+          git config user.name "arnarpuvi"
+          git config user.email "arnarpuvi@users.noreply.github.com"
           git add temp_*.json
-          git commit -m "Afegir dades de temperatura" || echo "No hi ha canvis"
+          git commit -m "Afegit arxiu de temperatura del dia $(date +%Y-%m-%d)" || echo "Sense canvis"
           git push
