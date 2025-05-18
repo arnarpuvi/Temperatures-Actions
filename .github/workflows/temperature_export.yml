@@ -1,6 +1,7 @@
 name: Temperature Daily Export
 
 on:
+  push:
   schedule:
     - cron: '*/5 * * * *'  # Cada 5 minuts
 
