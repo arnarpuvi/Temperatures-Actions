@@ -2,7 +2,7 @@ name: Temperature Daily Export
 
 on:
   schedule:
-    - cron: '59 23 * * *'  # Cada dia a les 23:59
+    - cron: '*/5 * * * *'  # Cada 5 minuts
 
 jobs:
   export-temperature:
