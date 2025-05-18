@@ -2,42 +2,33 @@ import requests
 import json
 from datetime import datetime
 
-# Ciutat: Lleida (canvia-ho si vols una altra)
-latitude = 41.6176
-longitude = 0.6200
+# Coordenades de Tremp (o qualsevol altra ciutat que vulguis)
+lat = 42.167
+lon = 0.894
 
-# Demanar dades a Open-Meteo
-url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m"
-response = requests.get(url)
-data = response.json()
+# Obtenir les temperatures horàries d'avui
+url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m&timezone=Europe/Madrid"
+resposta = requests.get(url)
+dades = resposta.json()
 
-# Obtenir les temperatures d'avui
-hores = data["hourly"]["time"]
-temperatures = data["hourly"]["temperature_2m"]
-
-# Filtrar només les temperatures d'avui
-avui = datetime.now().date().isoformat()
-temps_avui = [temp for hora, temp in zip(hores, temperatures) if hora.startswith(avui)]
+temperatures = dades["hourly"]["temperature_2m"]
 
 # Calcular màxim, mínim i mitjana
-if temps_avui:
-    maxim = max(temps_avui)
-    minim = min(temps_avui)
-    mitjana = sum(temps_avui) / len(temps_avui)
-else:
-    maxim = minim = mitjana = None
+max_temp = max(temperatures)
+min_temp = min(temperatures)
+avg_temp = sum(temperatures) / len(temperatures)
 
-# Crear diccionari de resultats
+# Data d'avui
+data_avui = datetime.now().strftime("%Y%m%d")
+fitxer = f"temp_{data_avui}.json"
+
+# Crear diccionari i guardar-lo
 resultat = {
-    "data": avui,
-    "temperatura_maxima": maxim,
-    "temperatura_minima": minim,
-    "temperatura_mitjana": mitjana
+    "data": data_avui,
+    "temperatura_maxima": max_temp,
+    "temperatura_minima": min_temp,
+    "temperatura_mitjana": round(avg_temp, 2)
 }
 
-# Exportar a JSON
-nom_fitxer = f"temp_{avui.replace('-', '')}.json"
-with open(nom_fitxer, "w") as f:
+with open(fitxer, "w") as f:
     json.dump(resultat, f, indent=4)
-
-print(f"Dades guardades a {nom_fitxer}")
