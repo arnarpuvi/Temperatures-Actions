@@ -24,7 +24,7 @@ jobs:
           pip install requests
 
       - name: Executar script
-        run: python main.py
+        run: python temperatures.py
 
       - name: Fer commit i push del fitxer JSON
         run: |
